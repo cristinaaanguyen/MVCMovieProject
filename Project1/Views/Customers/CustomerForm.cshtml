@@ -1,0 +1,55 @@
+﻿@model Project1.ViewModels.CustomerFormViewModel
+@{
+    /**/
+
+    ViewBag.Title = "CustomerForm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>New Customer</h2>
+<!--Html helper method; Html.BeginForm, pass target action that should be called when we post this form -->
+@using (Html.BeginForm("Save", "Customers"))
+{
+    @Html.ValidationSummary(true, "Please fix the foloowing errors."); //if set to true, won't show individual errors and will replace w/ that string
+    <div class="form-group">
+
+        @Html.LabelFor(m => m.Customer.Name) <!--pass lambda expression that specifies name of target property used in this form, in this case Customer model...expression: m as in model goes to m.Name; so when razor view engines renders view it'll look at this name property and use this as value for html label-->
+        @Html.TextBoxFor(m => m.Customer.Name, new { @class = "form-control" }) <!-- can pass an anonymous obj, and anything we pass to it will be considered an html attribute so if we wanna add a class..-->
+        @Html.ValidationMessageFor(m => m.Customer.Name) <!--add validation messages to our form, add place holder for validation messages next to each field that requires it -->
+    </div>
+
+
+
+    <div class="form-group">
+
+        @Html.LabelFor(m => m.Customer.Birthdate)
+        @Html.TextBoxFor(m => m.Customer.Birthdate, "{0:d MMM yyyy}", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Customer.Birthdate)
+    </div>
+
+
+
+    <div class="form-group">
+
+        @Html.LabelFor(m => m.Customer.MembershipTypeId)
+        @Html.DropDownListFor(m => m.Customer.MembershipTypeId, new SelectList(Model.MembershipTypes, "Id", "Name"), "Select Membership Type", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Customer.MembershipTypeId)
+    </div>
+
+
+    <div class="checkbox"> <label> @Html.CheckBoxFor(m => m.Customer.isSubscribedToNewsletter) Subscribed? </label></div>
+
+
+    @Html.HiddenFor(m => m.Customer.Id) <!-- need to add customer ID as hidden field  -->
+    @Html.AntiForgeryToken()<!--anti forgery token, make sure this request comes from customer form -->
+
+
+    <button type="submit" class="btn btn-primary">Save</button>
+
+}  <!-- this method returns a disposable obj, so if we wrap this call in a using block, at the end of the using block the obj returned from html begin form will be disposed and render closing html tag   -->
+
+
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")<!-- pass address of bundle -->
+}<!-- add this script section on pages where we need jquery validation for client side purposes -->
